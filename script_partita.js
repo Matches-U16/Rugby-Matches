@@ -111,13 +111,14 @@ document.getElementById("save-events").onclick = () => {
 };
 
 function saveMatch() {
-    localStorage.setItem(MATCH_ID, JSON.stringify({
+    firebase.database().ref(MATCH_ID).set({
         homeTeam,
         awayTeam,
         homeScore,
         awayScore,
-        status: getStatus()
-    }));
+        status: getStatus(),
+        updatedAt: Date.now()
+    });
 }
 
 updateTimerDisplay();

@@ -22,3 +22,25 @@ function update() {
 
 update();
 window.addEventListener("storage", update);
+
+function listen(matchId, elementId) {
+    firebase.database().ref(matchId).on("value", snapshot => {
+        const m = snapshot.val();
+        if (!m) return;
+
+        const el = document.getElementById(elementId);
+        el.className = "match-box " + (m.status === "FINITA" ? "finished" : "live");
+
+        el.innerHTML = `
+            <div class="teams">
+                <span>${m.homeTeam}</span>
+                <span>${m.homeScore} – ${m.awayScore}</span>
+                <span>${m.awayTeam}</span>
+            </div>
+            <div class="status">${m.status}</div>
+        `;
+    });
+}
+
+listen("match_1", "match1");
+listen("match_2", "match2");
