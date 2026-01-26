@@ -1,6 +1,7 @@
 let startTimestamp = null;
 let elapsedSeconds = 0;
 let timerInterval = null;
+let matchFinished = false;
 
 let homeScore = 0;
 let awayScore = 0;
@@ -50,15 +51,29 @@ function resetTimer() {
     saveMatch();
 }
 
+function startSecondHalf() {
+    if (!confirm("Avviare il secondo tempo da 35:00?")) return;
+
+    pauseTimer();
+    elapsedSeconds = 35 * 60;
+    updateTimerDisplay();
+    startTimer();
+    saveMatch();
+}
+
 document.getElementById("start-timer").onclick = startTimer;
 document.getElementById("pause-timer").onclick = pauseTimer;
 document.getElementById("reset-timer").onclick = resetTimer;
+document.getElementById("second-half").onclick = startSecondHalf;
+document.getElementById("end-match").onclick = endMatch;
 
 function getStatus() {
+    if (matchFinished) return "FINITA";
     if (elapsedSeconds < 35 * 60) return "PRIMO TEMPO";
     if (elapsedSeconds < 80 * 60) return "SECONDO TEMPO";
     return "FINITA";
 }
+
 
 function logEvent(text) {
     const e = `[${timeDisplay.textContent}] ${text} | ${homeScore} – ${awayScore}`;
@@ -68,6 +83,10 @@ function logEvent(text) {
 }
 
 function updateScore(team, pts, label) {
+    if (matchFinished) {
+        alert("La partita è terminata");
+        return;
+    }
     const player = prompt("Numero giocatore") || "N/D";
     if (team === "home") homeScore += pts;
     else awayScore += pts;
@@ -76,6 +95,18 @@ function updateScore(team, pts, label) {
     awayScoreEl.textContent = awayScore;
 
     logEvent(`${label} ${team === "home" ? homeTeam : awayTeam} #${player}`);
+    saveMatch();
+}
+
+function endMatch() {
+    if (matchFinished) return;
+
+    if (!confirm("Confermi la fine della partita?")) return;
+
+    pauseTimer();
+    matchFinished = true;
+
+    logEvent("FINE PARTITA");
     saveMatch();
 }
 
@@ -117,6 +148,7 @@ function saveMatch() {
         homeScore,
         awayScore,
         status: getStatus(),
+        finished: matchFinished,
         updatedAt: Date.now()
     });
 }

@@ -47,6 +47,14 @@ button.yellow-card {
     box-shadow: 0 4px 0 #c9b800;
 }
 
+#end-match {
+    background: #e53935;
+    border-color: #b71c1c;
+    box-shadow: 0 4px 0 #b71c1c;
+    color: white;
+    font-weight: bold;
+}
+
 /* SCORE */
 #scoreboard {
     display: flex;
