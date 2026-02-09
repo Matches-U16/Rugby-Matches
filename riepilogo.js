@@ -1,5 +1,7 @@
 setSummaryTitle();
 
+statusEl.textContent = d.status || "---";
+
 function highlightRangers(name) {
     return name.replace(/RANGERS/gi, m => `<span class="rangers">${m}</span>`);
 }
