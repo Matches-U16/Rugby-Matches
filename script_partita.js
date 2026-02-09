@@ -22,12 +22,33 @@ function highlightRangers(name) {
     return name.replace(/RANGERS/gi, m => `<span class="rangers">${m}</span>`);
 }
 
+// 🔹 FIREBASE READ (UNA SOLA VOLTA)
+firebase.database().ref(MATCH_ID).once("value").then(snap => {
+    const cfg = snap.val();
+    if (!cfg) {
+        alert("Configurazione squadra mancante in Firebase");
+        return
+    }
+    homeTeam = cfg.homeTeam;
+    awayTeam = cfg.awayTeam;
+    homeScore = cfg.homeScore;
+    awayScore = cfg.awayScore;
+    firstHalfEnded = cfg.firstHalfEnded;
+    matchFinished = cfg.finished;
+
+    homeScoreEl.textContent = homeScore;
+    awayScoreEl.textContent = awayScore;
+
+    document.querySelectorAll(".team h3")[0].innerHTML = highlightRangers(homeTeam);
+    document.querySelectorAll(".team h3")[1].innerHTML = highlightRangers(awayTeam);
+});
+
 // 🔹 NOMI SQUADRE
 let homeTeam = (prompt("Nome squadra di casa") || "CASA").toUpperCase();
 let awayTeam = (prompt("Nome squadra ospite") || "OSPITI").toUpperCase();
 
-document.getElementById("home-name").innerHTML = highlightRangers(homeTeam);
-document.getElementById("away-name").innerHTML = highlightRangers(awayTeam);
+<!-- document.getElementById("home-name").innerHTML = highlightRangers(homeTeam);
+document.getElementById("away-name").innerHTML = highlightRangers(awayTeam); -->
 
 // 🔹 TIMER
 function updateTimerDisplay() {
@@ -82,8 +103,8 @@ function updateScore(team, pts) {
 // 🔹 FIREBASE WRITE (UNICO!)
 function saveMatch() {
     firebase.database().ref(MATCH_ID).set({
-        homeTeam,
-        awayTeam,
+        <!-- homeTeam,
+        awayTeam, -->
         homeScore,
         awayScore,
         status: getStatus(),
@@ -91,26 +112,7 @@ function saveMatch() {
         finished: matchFinished,
         updatedAt: Date.now()
     });
-}
-
-// 🔹 FIREBASE READ (UNA SOLA VOLTA)
-firebase.database().ref(MATCH_ID).once("value").then(snap => {
-    const d = snap.val();
-    if (!d) return;
-
-    homeTeam = d.homeTeam;
-    awayTeam = d.awayTeam;
-    homeScore = d.homeScore;
-    awayScore = d.awayScore;
-    firstHalfEnded = d.firstHalfEnded;
-    matchFinished = d.finished;
-
-    homeScoreEl.textContent = homeScore;
-    awayScoreEl.textContent = awayScore;
-
-    document.querySelectorAll(".team h3")[0].innerHTML = highlightRangers(homeTeam);
-    document.querySelectorAll(".team h3")[1].innerHTML = highlightRangers(awayTeam);
-});
+} 
 
 // 🔹 PULSANTI
 document.getElementById("start-timer").onclick = startTimer;
@@ -133,6 +135,18 @@ document.getElementById("end-first-half").onclick = () => {
 document.getElementById("end-match").onclick = () => {
     matchFinished = true;
     pauseTimer();
+    saveMatch();
+};
+
+document.getElementById("edit-teams").onclick = () => {
+    if (!confirm("Vuoi modificare i nomi delle squadre?")) return;
+
+    homeTeam = (prompt("Nome squadra di casa", homeTeam) || homeTeam).toUpperCase();
+    awayTeam = (prompt("Nome squadra ospite", awayTeam) || awayTeam).toUpperCase();
+
+    document.getElementById("home-name").innerHTML = highlightRangers(homeTeam);
+    document.getElementById("away-name").innerHTML = highlightRangers(awayTeam);
+
     saveMatch();
 };
 

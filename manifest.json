@@ -11,3 +11,30 @@
     { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
+
+{
+  "config": {
+    "match_1": {
+      "homeTeam": "RANGERS ROMA",
+      "awayTeam": "MILANO RFC"
+    },
+    "match_2": {
+      "homeTeam": "TORINO RUGBY",
+      "awayTeam": "RANGERS PARMA"
+    }
+  },
+  "match_1": {
+    "homeScore": 0,
+    "awayScore": 0,
+    "status": "PRIMO TEMPO",
+    "firstHalfEnded": false,
+    "finished": false
+  },
+  "match_2": {
+    "homeScore": 0,
+    "awayScore": 0,
+    "status": "PRIMO TEMPO",
+    "firstHalfEnded": false,
+    "finished": false
+  }
+}
