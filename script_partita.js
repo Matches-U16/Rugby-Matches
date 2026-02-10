@@ -1,4 +1,6 @@
-/* 1️⃣ Costanti di stato */
+/* =======================
+   COSTANTI STATO
+======================= */
 const STATUS = {
     PRE: "---",
     FIRST: "PRIMO TEMPO",
@@ -7,27 +9,34 @@ const STATUS = {
     END: "FINITA"
 };
 
-/* 2️⃣ Variabili globali */
+/* =======================
+   VARIABILI
+======================= */
 let matchStatus = STATUS.PRE;
 let elapsedSeconds = 0;
 let timerInterval = null;
 let homeScore = 0;
 let awayScore = 0;
-
 let homeTeam = "";
 let awayTeam = "";
 
-/* 3️⃣ Riferimenti DOM (PRIMA delle funzioni) */
+/* =======================
+   DOM
+======================= */
 const startBtn = document.getElementById("start-btn");
 const endFirstHalfBtn = document.getElementById("end-first-half-btn");
 const secondHalfBtn = document.getElementById("second-half-btn");
 const endMatchBtn = document.getElementById("end-match-btn");
 
 const timeDisplay = document.getElementById("time-display");
+const homeNameEl = document.getElementById("home-name");
+const awayNameEl = document.getElementById("away-name");
 const homeScoreEl = document.getElementById("home-score");
 const awayScoreEl = document.getElementById("away-score");
 
-/* 4️⃣ QUI INSERISCI updateButtons() */
+/* =======================
+   UI
+======================= */
 function updateButtons() {
     startBtn.disabled = matchStatus !== STATUS.PRE;
     endFirstHalfBtn.disabled = matchStatus !== STATUS.FIRST;
@@ -35,20 +44,22 @@ function updateButtons() {
     endMatchBtn.disabled = matchStatus === STATUS.END;
 }
 
-/* 5️⃣ Altre funzioni (timer, saveMatch, ecc.) */
-function highlightRangers(name) {
-    return name.replace(/RANGERS/gi, m => `<span class="rangers">${m}</span>`);
-}
-
-/* 🔹 TIMER */
 function updateTimerDisplay() {
     const m = String(Math.floor(elapsedSeconds / 60)).padStart(2, "0");
     const s = String(elapsedSeconds % 60).padStart(2, "0");
     timeDisplay.textContent = `${m}:${s}`;
 }
 
+function highlightRangers(name) {
+    return name.replace(/RANGERS/gi, m => `<span class="rangers">${m}</span>`);
+}
+
+/* =======================
+   TIMER
+======================= */
 function startTimer() {
-    if (timerInterval || matchFinished) return;
+    if (timerInterval || matchStatus === STATUS.END) return;
+
     timerInterval = setInterval(() => {
         elapsedSeconds++;
         updateTimerDisplay();
@@ -61,153 +72,114 @@ function pauseTimer() {
     timerInterval = null;
 }
 
+/* =======================
+   PUNTEGGIO
+======================= */
 function updateScore(team, pts) {
-    if (matchFinished) return;
+    if (matchStatus === STATUS.END) return;
+
     if (team === "home") homeScore += pts;
     else awayScore += pts;
 
     homeScoreEl.textContent = homeScore;
     awayScoreEl.textContent = awayScore;
+
     saveMatch();
 }
 
-/* 6️⃣ Listener Firebase */
-/* 🔹 LETTURA CONFIG (NOMI SQUADRE) */
+/* =======================
+   FIREBASE
+======================= */
 firebase.database().ref(`config/${MATCH_ID}`).once("value").then(snap => {
     const cfg = snap.val();
-    if (!cfg) {
-        alert("Configurazione squadre mancante su Firebase");
-        return;
-    }
+    if (!cfg) return;
 
     homeTeam = cfg.homeTeam.toUpperCase();
     awayTeam = cfg.awayTeam.toUpperCase();
 
-    document.getElementById("home-name").innerHTML = highlightRangers(homeTeam);
-    document.getElementById("away-name").innerHTML = highlightRangers(awayTeam);
+    homeNameEl.innerHTML = highlightRangers(homeTeam);
+    awayNameEl.innerHTML = highlightRangers(awayTeam);
 });
 
-/* 🔹 LETTURA STATO PARTITA */
-firebase.database().ref(MATCH_ID).once("value").then(snap => {
+firebase.database().ref(MATCH_ID).on("value", snap => {
     const d = snap.val();
     if (!d) return;
 
     homeScore = d.homeScore || 0;
     awayScore = d.awayScore || 0;
-    
+    elapsedSeconds = d.timer || 0;
     matchStatus = d.status || STATUS.PRE;
 
-    updateUI()
+    homeScoreEl.textContent = homeScore;
+    awayScoreEl.textContent = awayScore;
+
+    updateTimerDisplay();
+    updateButtons();
 });
 
-/* 7️⃣ Listener pulsanti STATO PARTITA */
-
-/* INIZIO */
+/* =======================
+   STATO PARTITA
+======================= */
 startBtn.onclick = () => {
-    if (matchStatus !== STATUS.PRE) return;
-
     matchStatus = STATUS.FIRST;
-    startTimer(0);
+    elapsedSeconds = 0;
+    startTimer();
     saveMatch();
 };
 
-/* FINE PRIMO TEMPO */
 endFirstHalfBtn.onclick = () => {
-    if (matchStatus !== STATUS.FIRST) return;
-
     pauseTimer();
     matchStatus = STATUS.BREAK;
     saveMatch();
 };
 
-/* SECONDO TEMPO */
 secondHalfBtn.onclick = () => {
-    if (matchStatus !== STATUS.BREAK) return;
-
+    elapsedSeconds = 35 * 60;
     matchStatus = STATUS.SECOND;
-    startTimer(35 * 60);
+    startTimer();
     saveMatch();
 };
 
-/* FINE PARTITA */
 endMatchBtn.onclick = () => {
-    if (matchStatus === STATUS.END) return;
-
     pauseTimer();
     matchStatus = STATUS.END;
     saveMatch();
 };
 
-/* 🔹 SALVATAGGIO */
+/* =======================
+   SALVATAGGIO
+======================= */
 function saveMatch() {
     firebase.database().ref(MATCH_ID).update({
         homeScore,
         awayScore,
         status: matchStatus,
-        timer: elapsedSeconds;
+        timer: elapsedSeconds,
         updatedAt: Date.now()
     });
 }
 
-/* 🔹 PUNTEGGIO + EVENTI */
-function logEvent(text) {
-    const ul = document.getElementById("events-list");
-    const li = document.createElement("li");
-    li.textContent = `[${timeDisplay.textContent}] ${text}`;
-    ul.appendChild(li);
-}
-
-/* 🔹 PULSANTI PUNTEGGIO */
-document.querySelectorAll(".score-btn").forEach(btn => {
+/* =======================
+   BOTTONI PUNTEGGIO
+======================= */
+document.querySelectorAll("[data-team]").forEach(btn => {
     btn.onclick = () => {
-        if (matchFinished) return;
-
         const team = btn.dataset.team;
-        const pts = parseInt(btn.dataset.points);
+        const pts = parseInt(btn.dataset.points, 10);
+
+        if (matchStatus === STATUS.END) return;
 
         if (btn.classList.contains("yellow")) {
             const p = prompt("Numero giocatore (giallo)");
             if (!p) return;
-            logEvent(`GIALLO ${team === "home" ? homeTeam : awayTeam} #${p}`);
             return;
         }
 
         if (pts > 0) {
             const p = prompt("Numero giocatore");
             if (!p) return;
-            updateScore(team, pts);
-            logEvent(`${btn.textContent.toUpperCase()} ${team === "home" ? homeTeam : awayTeam} #${p} (${homeScore}-${awayScore})`);
-        } else {
-            updateScore(team, pts);
         }
+
+        updateScore(team, pts);
     };
 });
-
-/* 🔹 ALTRI PULSANTI */
-document.getElementById("start-timer").onclick = startTimer;
-document.getElementById("pause-timer").onclick = pauseTimer;
-
-document.getElementById("second-half").onclick = () => {
-    elapsedSeconds = 35 * 60;
-    updateTimerDisplay();
-    startTimer();
-};
-
-document.getElementById("end-first-half").onclick = () => {
-    pauseTimer();
-    saveMatch();
-};
-
-document.getElementById("end-match").onclick = () => {
-    pauseTimer();
-    saveMatch();
-};
-
-document.getElementById("reset-timer").onclick = () => {
-    if (!confirm("Reset totale partita?")) return;
-    elapsedSeconds = 0;
-    matchStatus = STATUS.PRE;
-    homeScore = awayScore = 0;
-    homeScoreEl.textContent = awayScoreEl.textContent = "0";
-    saveMatch();
-};
