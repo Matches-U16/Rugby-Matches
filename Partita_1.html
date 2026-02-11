@@ -32,16 +32,28 @@
 </head>
 
 <body>
+  <div id="time-display">00:00</div>
 
-    <h2 id="home-name">---</h2>
-    <div id="home-score">0</div>
+    <div class="match-container">
 
-    <h2 id="away-name">---</h2>
-    <div id="away-score">0</div>
+      <div class="teams">
+
+        <!-- CASA -->
+        <div class="team home">
+          <h2 id="home-name">Home</h2>
+          <div id="home-score" class="score">0</div>
+        </div>
+
+        <!-- TRASFERTA -->
+        <div class="team away">
+          <h2 id="away-name">Away</h2>
+          <div id="away-score" class="score">0</div>
+        </div>
+
+      </div>
+    </div>
 
     <div class="timer-controls">
-      <div id="time-display">00:00</div>
-
       <button id="start-btn">Avvia</button>
       <button id="pause-btn">Pausa</button>
       <button id="reset-btn">Reset</button>
@@ -50,15 +62,15 @@
       <button id="second-half-btn">Secondo tempo</button>
       <button id="end-match-btn">Fine Partita</button>
     </div>
-
+    
+      <hr class="timer-separator">
+  
     <div class="match-container">
 
       <div class="teams">
 
         <!-- CASA -->
         <div class="team home">
-          <h2 id="home-name">---</h2>
-          <div id="home-score" class="score">0</div>
 
           <div class="buttons">
             <button class="score-btn" data-team="home" data-points="5">Meta</button>
@@ -71,8 +83,6 @@
 
         <!-- TRASFERTA -->
         <div class="team away">
-          <h2 id="away-name">---</h2>
-          <div id="away-score" class="score">0</div>
 
           <div class="buttons">
             <button class="score-btn" data-team="away" data-points="5">Meta</button>

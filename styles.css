@@ -22,6 +22,14 @@ h1, h2 {
 #time-display {
     font-size: 2.5rem;
     font-weight: bold;
+    text-align: center;
+}
+
+.timer-controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 /* PULSANTI */
@@ -62,6 +70,12 @@ button.yellow-card {
     margin-top: 20px;
 }
 
+.score {
+  font-size: 3rem;   /* ⬅ aumenta qui */
+  font-weight: bold;
+  line-height: 1;
+}
+
 .team {
   width: 50%;
   text-align: center;
@@ -71,6 +85,7 @@ button.yellow-card {
     font-size: 48px;
     font-weight: bold;
     margin: 10px 0;
+    text-align: center;
 }
 
 .score-buttons {
@@ -87,7 +102,7 @@ button.yellow-card {
 
 .score-btn {
     padding: 10px;
-    font-size: 14px;
+    font-size: 13px;
     border-radius: 10px;
     border: none;
     background: #e0e0e0;

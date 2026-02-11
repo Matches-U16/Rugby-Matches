@@ -18,7 +18,7 @@ function setSummaryTitle() {
     const mm = String(d.getMonth() + 1).padStart(2, "0");
 
     document.getElementById("summary-title").textContent =
-        `Riepilogo ${gg}/${mm}`;
+        `Partite U16 - ${gg}/${mm}`;
 }
 
 setSummaryTitle();
@@ -56,8 +56,11 @@ function renderMatch(matchId, elementId) {
         el.innerHTML = `
             <div class="teams">
                 <div>${highlightRangers(cfg.homeTeam)}</div>
-                <strong>${d.homeScore} – ${d.awayScore}</strong>
+ 
                 <div>${highlightRangers(cfg.awayTeam)}</div>
+            </div>
+            <div style="text-align: center;">
+               <strong>${d.homeScore} – ${d.awayScore}</strong>
             </div>
             <div class="status">${d.status || "---"}</div>
         `;
@@ -75,3 +78,4 @@ firebase.database().ref("match_1").on("value", () => {
 firebase.database().ref("match_2").on("value", () => {
     renderMatch("match_2", "match2");
 });
+
