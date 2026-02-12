@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Partita 2</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="styles.css">
@@ -10,67 +11,93 @@
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyC368UY6fDHGFK2RY1bY7JZKv-5yQQpc9U",
+            authDomain: "u16rugbymatches.firebaseapp.com",
+            databaseURL: "https://u16rugbymatches-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "u16rugbymatches",
+            storageBucket: "u16rugbymatches.firebasestorage.app",
+            messagingSenderId: "202503600649",
+            appId: "1:202503600649:web:31f940dc24dba16c6bd6d8"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        const MATCH_ID = "match_2";
+    </script>
 </head>
+
 <body>
+  <div id="time-display">00:00</div>
 
-<a href="index.html" class="nav-btn">← Riepilogo</a>
+    <div class="match-container">
 
-<h1>Partita 2</h1>
+      <div class="teams">
 
-<div id="timer">
-    <span id="time-display">00:00</span><br>
-    <button id="start-timer">Avvia</button>
-    <button id="pause-timer">Pausa</button>
-    <button id="second-half">Secondo Tempo</button>
-    <button id="end-first-half">Fine 1° Tempo</button>
-    <button id="end-match">Fine Partita</button>
-    <button id="reset-timer">Reset</button>
-</div>
+        <!-- CASA -->
+        <div class="team home">
+          <h2 id="home-name">Home</h2>
+          <div id="home-score" class="score">0</div>
+        </div>
 
-<div id="scoreboard">
+        <!-- TRASFERTA -->
+        <div class="team away">
+          <h2 id="away-name">Away</h2>
+          <div id="away-score" class="score">0</div>
+        </div>
 
-    <div class="team">
-        <h3 id="home-name"></h3>
-        <p id="home-score">0</p>
+      </div>
+    </div>
 
-        <div class="score-buttons">
+    <div class="timer-controls">
+      <button id="start-btn">Avvia</button>
+      <button id="pause-btn">Pausa</button>
+      <button id="reset-btn">Reset</button>
+
+      <button id="end-first-half-btn">Fine 1° tempo</button>
+      <button id="second-half-btn">Secondo tempo</button>
+      <button id="end-match-btn">Fine Partita</button>
+    </div>
+    
+      <hr class="timer-separator">
+  
+    <div class="match-container">
+
+      <div class="teams">
+
+        <!-- CASA -->
+        <div class="team home">
+
+          <div class="buttons">
             <button class="score-btn" data-team="home" data-points="5">Meta</button>
-            <button class="score-btn" data-team="home" data-points="2">Trasformazione</button>
-            <button class="score-btn" data-team="home" data-points="3">Punizione / Drop</button>
+            <button class="score-btn" data-team="home" data-points="2">Trasf.</button>
+            <button class="score-btn" data-team="home" data-points="3">Puniz.</button>
             <button class="score-btn" data-team="home" data-points="-1">-1</button>
-            <button class="score-btn yellow" data-team="home" data-points="0">Giallo</button>
+            <button class="score-btn yellow" data-team="home">Giallo</button>
+          </div>
         </div>
-    </div>
 
-    <div class="team">
-        <h3 id="away-name"></h3>
-        <p id="away-score">0</p>
+        <!-- TRASFERTA -->
+        <div class="team away">
 
-        <div class="score-buttons">
+          <div class="buttons">
             <button class="score-btn" data-team="away" data-points="5">Meta</button>
-            <button class="score-btn" data-team="away" data-points="2">Trasformazione</button>
-            <button class="score-btn" data-team="away" data-points="3">Punizione / Drop</button>
+            <button class="score-btn" data-team="away" data-points="2">Trasf.</button>
+            <button class="score-btn" data-team="away" data-points="3">Puniz.</button>
             <button class="score-btn" data-team="away" data-points="-1">-1</button>
-            <button class="score-btn yellow" data-team="away" data-points="0">Giallo</button>
+            <button class="score-btn yellow" data-team="away">Giallo</button>
+          </div>
         </div>
+
+      </div>
     </div>
 
-</div>
-
-<ul id="events-list"></ul>
-
-<script>
-firebase.initializeApp({
-  apiKey: "AIzaSyC368UY6fDHGFK2RY1bY7JZKv-5yQQpc9U",
-  authDomain: "u16rugbymatches.firebaseapp.com",
-  databaseURL: "https://u16rugbymatches-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "u16rugbymatches"
-});
-
-const MATCH_ID = "match_2"; // match_1 nell'altro file
-</script>
-
-<script src="script_partita.js"></script>
+    <!-- 🔥 SEMPRE ALLA FINE -->
+    <script src="script_partita.js"></script>
 
 </body>
 </html>

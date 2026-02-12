@@ -1,4 +1,4 @@
-//* =======================
+/* =======================
    COSTANTI STATO
 ======================= */
 const STATUS = {
@@ -90,9 +90,9 @@ function updateScore(team, pts) {
 }
 
 /* =======================
-   FIREBASE
+   FIREBASE LISTENER
 ======================= */
-firebase.database().ref(`config/${MATCH_ID}`).once("value").then(snap => {
+firebase.database().ref(`config/${MATCH_ID}`).on("value", snap => {
     const cfg = snap.val();
     if (!cfg) return;
 
@@ -117,6 +117,8 @@ firebase.database().ref(MATCH_ID).on("value", snap => {
 
     updateTimerDisplay();
     updateButtons();
+
+    pauseBtn.textContent = timerInterval ? "Pausa" : "Riprendi";
 });
 
 /* =======================
@@ -148,7 +150,15 @@ endMatchBtn.onclick = () => {
     saveMatch();
 };
 
-pauseBtn.onclick = pauseTimer;
+pauseBtn.onclick = () => {
+    if (timerInterval) {
+        pauseTimer();
+        pauseBtn.textContent = "Riprendi";
+    } else {
+        startTimer();
+        pauseBtn.textContent = "Pausa";
+    }
+};
 
 resetBtn.onclick = () => {
     if (!confirm("Reset totale partita?")) return;
@@ -184,7 +194,7 @@ function saveMatch() {
 document.querySelectorAll("[data-team]").forEach(btn => {
     btn.onclick = () => {
         const team = btn.dataset.team;
-        const pts = parseInt(btn.dataset.points, 10);
+        const pts = btn.dataset.points ? parseInt(btn.dataset.points, 10) : 0;
 
         if (matchStatus === STATUS.END) return;
 
